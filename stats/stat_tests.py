@@ -1,5 +1,8 @@
+"""File providing functions for stat tests"""
+
 import numpy as np
-from scipy.stats import chi2_contingency, ttest_ind, mannwhitneyu,norm
+from scipy.stats import chi2_contingency, norm
+# ttest_ind, mannwhitneyu,
 
 
 def sample_ration_mismatch(observed_counts: list[int], expected_counts: list[int]) -> bool:
@@ -19,9 +22,9 @@ def sample_ration_mismatch(observed_counts: list[int], expected_counts: list[int
     return p_value < 0.05
 
 
-#TODO: update for A/B/n test
 def calc_min_sample_size_ttest_manual(p: float, mean: float, std: float, uplift: float,
-                                      alpha: float=0.05, power: float=0.8, is_one_side:float=1, r:float=0.5):
+                                      alpha: float=0.05, power: float=0.8,
+                                      is_one_side:float=1, r:float=0.5):
     """
     Function to calculate minimum sample size for ztest
 
@@ -37,19 +40,18 @@ def calc_min_sample_size_ttest_manual(p: float, mean: float, std: float, uplift:
     """
 
     if is_one_side == 1:
-        M = (norm.ppf(q=1 - alpha) + norm.ppf(q=power)) ** 2
+        m = (norm.ppf(q=1 - alpha) + norm.ppf(q=power)) ** 2
     else:
-        M = (norm.ppf(q=1 - alpha / 2) + norm.ppf(q=power)) ** 2
+        m = (norm.ppf(q=1 - alpha / 2) + norm.ppf(q=power)) ** 2
 
     if p is not None:
         es = p*(uplift - 1)
         var_1 = p*(1-p)
         var_2 = p*uplift*(1 - p*uplift)
-        n = ((M / (es ** 2)) * (var_1/r + var_2/(1-r))) / 2
+        n = ((m / (es ** 2)) * (var_1/r + var_2/(1-r))) / 2
     else:
         sd = std
         es = uplift * mean - mean
-        n = (M * ((sd ** 2) / (r*(1-r))) / (es ** 2)) / 2
+        n = (m * ((sd ** 2) / (r*(1-r))) / (es ** 2)) / 2
 
     return n
-
