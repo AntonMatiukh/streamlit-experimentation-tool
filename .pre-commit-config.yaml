@@ -2,6 +2,7 @@ repos:
   - repo: local
     hooks:
       - id: pylint
+        exclude: jit_test.py
         name: pylint
         entry: pylint
         language: system
@@ -10,5 +11,7 @@ repos:
           [
             "-rn", # Only display messages
             "-sn", # Don't display the score
-            "--max-args=10"
+            "--max-args=10",
+            "--max-locals=30",
+            "--disable=W0511"
           ]
