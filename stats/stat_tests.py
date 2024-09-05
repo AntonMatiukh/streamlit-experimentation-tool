@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency, norm, ttest_ind
 from numba import jit
+from numba import njit, prange
 
 
 # TODO: Think about sequential approach
@@ -65,7 +66,7 @@ def calc_min_sample_size_ttest_manual(p: float,
     return n
 
 
-@jit
+@njit
 def bootstrap(control: pd.Series,
               test: pd.Series,
               n_bootstraps=1_000,
@@ -80,7 +81,7 @@ def bootstrap(control: pd.Series,
     """
     p_value = 0
 
-    for _ in range(n_bootstraps):
+    for _ in prange(n_bootstraps):
         control_b = np.random.choice(control, len(control))
         test_b = np.random.choice(test, len(test))
         p_value += 1 if np.mean(control_b) < np.mean(test_b) else 0
@@ -124,11 +125,10 @@ def bucketization(control: pd.Series,
         try:
             control = control[k_control:]
             test = test[k_test:]
+            np.random.shuffle(control)
+            np.random.shuffle(test)
         except ValueError:
             pass
-
-    np.random.shuffle(control)
-    np.random.shuffle(test)
 
     return ttest_ind(buckets_test, buckets_control, alternative=alternative).pvalue
 
