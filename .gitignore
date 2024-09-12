@@ -1,3 +1,3 @@
 /.idea
 jit_test.py
-stats/**/__pycache__
+src/stats/**/__pycache__/
