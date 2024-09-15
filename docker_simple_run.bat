@@ -1,4 +1,4 @@
-set "timeout_period=120"
+set "timeout_period=600"
 
 if not "%1" == "" (
     set "timeout_period=%1"
