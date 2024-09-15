@@ -2,3 +2,6 @@
 jit_test.py
 src/stats/**/__pycache__/
 src/parallel/**/__pycache__/
+__pycache__/
+sidebar_gif.gif
+funny_cat.gif

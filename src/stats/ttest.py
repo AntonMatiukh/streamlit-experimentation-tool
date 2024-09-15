@@ -36,7 +36,7 @@ class TTest(StatTest):
         elif ((p is not None and control is not None)
             or (p is not None and (mean is not None or std is not None))
             or (control is not None and (mean is not None or std is not None))):
-            raise ValueError('Please p OR control OR mean,std')
+            raise ValueError('Please use p OR control OR mean,std')
 
         if control is not None:
             mean, std = np.mean(control), np.std(control)
@@ -58,5 +58,67 @@ class TTest(StatTest):
 
         return n
 
+    def run_test(control: np.array,
+                 test: np.array) -> float:
+        """
+        Calculate p-value for independent groups
 
+        :param control: Control group data
+        :param test: Test group date
+        :return: p-value
+        """
 
+        mean_control = np.mean(control)
+        mean_test = np.mean(test)
+        std_control = np.std(control, ddof=1)
+        std_test = np.std(test, ddof=1)
+
+        n_control = len(control)
+        n_test = len(test)
+
+        t_stat = (mean_test - mean_control) / np.sqrt((std_control ** 2 / n_control) + (std_test ** 2 / n_test))
+
+        df = n_control + n_test - 2
+
+        p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), df=df))
+
+        return p_value
+
+    def calculate_power(control: np.array,
+                        test: np.array,
+                        alpha: float = 0.05,
+                        is_one_side: float = 1
+                        ) -> float:
+        """
+        Power calculation
+
+        :param control: Control data
+        :param test: Test data
+        :param alpha: Significance level
+        :return: Power
+        """
+
+        mean_control = np.mean(control)
+        mean_test = np.mean(test)
+
+        effect_size = mean_test - mean_control
+
+        std_control = np.std(control, ddof=1)
+        std_test = np.std(test, ddof=1)
+        pooled_std = np.sqrt((std_control ** 2 + std_test ** 2) / 2)
+
+        n_control = len(control)
+        n_test = len(test)
+
+        n = (n_control + n_test) / 2
+
+        if is_one_side == 1:
+            z_alpha = norm.ppf(1 - alpha)
+        else:
+            z_alpha = norm.ppf(1 - alpha / 2)
+
+        z_beta = (effect_size / pooled_std) * np.sqrt(n) - z_alpha
+
+        power = norm.cdf(z_beta)
+
+        return power

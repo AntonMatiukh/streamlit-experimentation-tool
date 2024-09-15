@@ -168,26 +168,21 @@ def bucketization(control: pd.Series,
     :return: p-value of bucketization test
     """
 
-    buckets_control = []
-    buckets_test = []
+    if len(control) < buckets_count or len(test) < buckets_count:
+        raise ValueError("Data amount issue, please use larger df")
 
     k_control = len(control) // buckets_count
     k_test = len(test) // buckets_count
 
-    np.random.shuffle(control)
-    np.random.shuffle(test)
+    control_shuffled = control.sample(frac=1).reset_index(drop=True)
+    test_shuffled = test.sample(frac=1).reset_index(drop=True)
 
-    for _ in range(buckets_count):
-        buckets_control.append(np.mean(control[:k_control]))
-        buckets_test.append(np.mean(control[:k_test]))
+    buckets_control = []
+    buckets_test = []
 
-        try:
-            control = control[k_control:]
-            test = test[k_test:]
-            np.random.shuffle(control)
-            np.random.shuffle(test)
-        except ValueError:
-            pass
+    for i in range(buckets_count):
+        buckets_control.append(np.mean(control_shuffled[i * k_control: (i + 1) * k_control]))
+        buckets_test.append(np.mean(test_shuffled[i * k_test: (i + 1) * k_test]))
 
     return ttest_ind(buckets_test, buckets_control, alternative=alternative).pvalue
 
