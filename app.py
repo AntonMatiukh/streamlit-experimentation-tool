@@ -15,10 +15,11 @@ st.title("Hi dear friend 🎈")
 st.subheader("Please upload your CSV file with experiment data (format example below)")
 
 # Create df example to describe structure
-df_example = pd.DataFrame({'user_id':['test_12345'],
-                           'experiment_exposure':[datetime.datetime(2024, 9, 1, 10, 5, 0)],
-                           'timestamp':[datetime.datetime(2024, 9, 1, 13, 15, 35)],
-                           'value':[12.6]})
+df_example = pd.DataFrame({'user_id':['test_12345', 'test_12349'],
+                           'variation_id':[0,1],
+                           'experiment_exposure':[datetime.datetime(2024, 9, 1, 10, 5, 0), datetime.datetime(2024, 9, 1, 10, 5, 0)],
+                           'timestamp':[datetime.datetime(2024, 9, 1, 13, 15, 35), datetime.datetime(2024, 9, 1, 13, 15, 35)],
+                           'value':[12.6, 13.2]})
 
 st.write(df_example)
 
