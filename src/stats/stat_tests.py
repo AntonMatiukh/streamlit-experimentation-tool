@@ -345,3 +345,31 @@ def transform_data(control: pd.Series,
         control_t, test_t = stats.boxcox(control), stats.boxcox(test)
 
     return control_t, test_t
+
+
+def permutation_test(group1, group2, n_permutations=2_000):
+    """
+    Perform a permutation test to compare the means of two groups.
+
+    Parameters:
+    - group1: array-like, first group of observations
+    - group2: array-like, second group of observations
+    - n_permutations: int, number of permutations to perform
+
+    Returns:
+    - p_value: float, p-value of the test
+    """
+    observed_diff = np.mean(group1) - np.mean(group2)
+    combined = np.concatenate([group1, group2])
+    count = 0
+
+    for _ in range(n_permutations):
+        np.random.shuffle(combined)
+        permuted_group1 = combined[:len(group1)]
+        permuted_group2 = combined[len(group1):]
+        permuted_diff = np.mean(permuted_group1) - np.mean(permuted_group2)
+        if np.abs(permuted_diff) >= np.abs(observed_diff):
+            count += 1
+
+    p_value = count / n_permutations
+    return p_value

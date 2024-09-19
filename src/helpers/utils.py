@@ -1,7 +1,27 @@
 """Helpers & utils, currently applicable for functional paradigm"""
 
 from joblib import Parallel, delayed
+import numpy as np
 
+
+def generate_lognormal(mean, std, size):
+    """
+    Generate a lognormal distribution with the specified mean and std.
+
+    Parameters:
+    - mean: float, desired mean of the lognormal distribution
+    - std: float, desired standard deviation of the lognormal distribution
+    - size: int, number of samples to generate
+
+    Returns:
+    - samples: array-like, generated lognormal samples
+    """
+
+    mu = np.log(mean ** 2 / np.sqrt(std ** 2 + mean ** 2))
+    sigma = np.sqrt(np.log(1 + (std ** 2 / mean ** 2)))
+
+    samples = np.random.lognormal(mean=mu, sigma=sigma, size=size)
+    return samples
 
 def parallel_run(func, n_iterations=2_000, n_jobs=-1, **kwargs):
     results = Parallel(n_jobs=n_jobs)(delayed(func)(**kwargs) for _ in range(n_iterations))

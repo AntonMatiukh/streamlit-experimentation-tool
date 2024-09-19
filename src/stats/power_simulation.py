@@ -8,7 +8,7 @@ from numpy.random import SeedSequence, default_rng
 
 
 class PowerSimulation:
-    def __init__(self, n_iterations=2000, power=0.8, alpha=0.05, greater_or_less='greater'):
+    def __init__(self, n_iterations=2_000, power=0.8, alpha=0.05, greater_or_less='greater'):
         self.n_iterations = n_iterations
         self.power = power
         self.alpha = alpha
